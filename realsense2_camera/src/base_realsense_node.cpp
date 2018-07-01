@@ -32,20 +32,62 @@ BaseRealSenseNode::BaseRealSenseNode(ros::NodeHandle& nodeHandle,
     // Infrared stream - Left
     _is_frame_arrived[INFRA1] = false;
     _format[INFRA1] = RS2_FORMAT_Y8;   // libRS type
+ 
+  
+    std::string infra1_encoding, infra1_depth_aligned_encoding;
+    _pnh.getParam("infra1_encoding", infra1_encoding);
+    _pnh.getParam("infra1_depth_aligned_encoding", infra1_depth_aligned_encoding);
+
+    ROS_INFO("%s", infra1_encoding.c_str());
+
+    if(infra1_encoding == "8UC1"){
+        _encoding[INFRA1] = sensor_msgs::image_encodings::TYPE_8UC1; // ROS message type
+    }else if(infra1_encoding == "MONO8"){
+        _encoding[INFRA1] = sensor_msgs::image_encodings::MONO8; // ROS message type
+    }else{
+        throw std::runtime_error("Encoding must be 8UC1 or MONO8");
+    }
+
+  
     _image_format[INFRA1] = CV_8UC1;    // CVBridge type
-    _encoding[INFRA1] = sensor_msgs::image_encodings::TYPE_8UC1; // ROS message type
     _unit_step_size[INFRA1] = sizeof(uint8_t); // sensor_msgs::ImagePtr row step size
     _stream_name[INFRA1] = "infra1";
-    _depth_aligned_encoding[INFRA1] = sensor_msgs::image_encodings::TYPE_16UC1;
+
+    if(infra1_depth_aligned_encoding == "16UC1"){
+        _depth_aligned_encoding[INFRA1] = sensor_msgs::image_encodings::TYPE_16UC1;
+    }else if(infra1_depth_aligned_encoding == "MONO16"){
+        _depth_aligned_encoding[INFRA1] = sensor_msgs::image_encodings::MONO16;
+    }else{
+        throw std::runtime_error("Encoding must be 16UC1 or MONO16");
+    }
+
 
     // Infrared stream - Right
+    std::string infra2_encoding, infra2_depth_aligned_encoding;
+    _pnh.getParam("infra2_encoding", infra2_encoding);
+    _pnh.getParam("infra2_depth_aligned_encoding", infra2_depth_aligned_encoding);
+
+    if(infra2_encoding == "8UC1"){
+        _encoding[INFRA2] = sensor_msgs::image_encodings::TYPE_8UC1; // ROS message type
+    }else if(infra2_encoding == "MONO8"){
+        _encoding[INFRA2] = sensor_msgs::image_encodings::MONO8; // ROS message type
+    }else{
+        throw std::runtime_error("Encoding must be 8UC1 or MONO8");
+    }
+
+    if(infra2_depth_aligned_encoding == "16UC1"){
+        _depth_aligned_encoding[INFRA2] = sensor_msgs::image_encodings::TYPE_16UC1;
+    }else if(infra2_depth_aligned_encoding == "MONO16"){
+        _depth_aligned_encoding[INFRA2] = sensor_msgs::image_encodings::MONO16;
+    }else{
+        throw std::runtime_error("Encoding must be 16UC1 or MONO16");
+    }
+
     _is_frame_arrived[INFRA2] = false;
     _format[INFRA2] = RS2_FORMAT_Y8;   // libRS type
     _image_format[INFRA2] = CV_8UC1;    // CVBridge type
-    _encoding[INFRA2] = sensor_msgs::image_encodings::TYPE_8UC1; // ROS message type
     _unit_step_size[INFRA2] = sizeof(uint8_t); // sensor_msgs::ImagePtr row step size
     _stream_name[INFRA2] = "infra2";
-    _depth_aligned_encoding[INFRA2] = sensor_msgs::image_encodings::TYPE_16UC1;
 
     // Types for color stream
     _is_frame_arrived[COLOR] = false;
